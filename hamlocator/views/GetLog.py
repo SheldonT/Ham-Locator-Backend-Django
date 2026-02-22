@@ -8,13 +8,16 @@ from keystone.mixins.FirebaseAuthRequiredMixin import  FirebaseAuthRequiredMixin
 from hamlocator.serializers import LogSerializer
 
 class GetLogView(AuthRequiredMixin, View):
+
+    #TODO: Add filtering by date range and/or location
+    #TODO: Add option to get log stats (total number by country, etc.)
     def get(self, request):
 
         authenticated_user = request.user
 
         try:
             page = int(request.GET.get('page', 1))
-            page_size = min(int(request.GET.get('page_size', 20)), 100)  # Limit page size to 100
+            page_size = min(int(request.GET.get('page_size', 20)), 1000)  # Limit page size to 1000. Temporary solution until we implement cursor-based pagination on frontend.
             descend = request.GET.get('descend', 'true').lower() == 'true'
         except ValueError:  
             return JsonResponse({

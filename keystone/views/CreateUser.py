@@ -24,12 +24,17 @@ class CreateUserView(View):
         custom_claims = user_model.get_custom_claims()
 
         claims_data = {claim: data.get(claim) for claim in custom_claims}
-
-        if (password != confirm_password) and (password is not None and confirm_password is not None):
+        
+        if not password or not confirm_password:
             return JsonResponse({
-
                 'success': False,
-                'message': 'Passwords do not match, or one of the password fields is empty',
+                'message': 'Both password fields are required',
+                'data': {}}, status=400)
+        
+        if password != confirm_password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Passwords do not match',
                 'data': {}}, status=400)
         
         user = auth.create_user(

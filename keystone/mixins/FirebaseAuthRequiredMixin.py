@@ -33,6 +33,7 @@ class FirebaseAuthRequiredMixin(View):
                 
                 #if the id token is expiring in less than 5 minutes, signal the client to refresh
                 if time_until_expiry < 300:
+                      
                       response['X-Token-Refresh'] = 'true'
                 
             except Exception as e:
@@ -42,4 +43,4 @@ class FirebaseAuthRequiredMixin(View):
                                 'message': 'Authentication required to access this resource',
                                 'data': {}}, status=401)
             
-        return response 
+        return response

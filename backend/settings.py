@@ -90,6 +90,13 @@ TEMPLATES = [
     },
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
@@ -147,8 +154,12 @@ STATIC_URL = 'static/'
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONT_END_HOST', 'http://localhost:3000'),
 ]
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOW_CREDENTIALS = not DEBUG
+#CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_EXPOSE_HEADERS = [
+    'X-Token-Refresh',
+]
 
 KEYSTONE_USER_MODEL = 'hamlocator.models.Users'
 

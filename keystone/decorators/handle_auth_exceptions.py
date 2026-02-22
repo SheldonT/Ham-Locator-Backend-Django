@@ -27,7 +27,7 @@ def handle_auth_exceptions(view_func):
                 'success': False,
                 'message': f'Firebase error: {str(e)}',
                 'data': {}
-            }, status=500)
+            }, status=400)
         except IntegrityError as e:
             return JsonResponse({
                 'success': False,
