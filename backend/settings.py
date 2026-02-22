@@ -38,7 +38,12 @@ SECRET_KEY = os.getenv('SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ["localhost"]
+if DEBUG:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+else:
+    # In production, get allowed hosts from environment variable
+    allowed_hosts_str = os.getenv('ALLOWED_HOSTS', '*')
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',')]
 
 
 # Application definition
@@ -150,6 +155,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONT_END_HOST', 'http://localhost:3000'),
@@ -164,10 +170,14 @@ CORS_EXPOSE_HEADERS = [
 KEYSTONE_USER_MODEL = 'hamlocator.models.Users'
 
 
+# Initialize Firebase
 if DEBUG:
     print("Running in DEBUG mode: CORS_ALLOW_ALL_ORIGINS is True")
+    # Use credentials file in development
     cred = credentials.Certificate(
         os.path.join(BASE_DIR, os.getenv('FIREBASE_CREDENTIALS',''))
     )
-
     firebase_admin.initialize_app(cred)
+else:
+    # Use default application credentials in production (Cloud Run service account)
+    firebase_admin.initialize_app()

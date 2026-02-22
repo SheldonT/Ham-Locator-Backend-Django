@@ -1,0 +1,40 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ham-locator-backend:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ham-locator-backend:latest'
+      - '.'
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/ham-locator-backend:$COMMIT_SHA'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'ham-locator-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/ham-locator-backend:$COMMIT_SHA'
+      - '--region'
+      - 'northamerica-northeast1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'DEBUG=${_DEBUG},ALLOWED_HOSTS=${_ALLOWED_HOSTS},FRONT_END_HOST=${_FRONT_END_HOST},DB_HOST=${_DB_HOST},DB_PORT=${_DB_PORT},DB_USER=${_DB_USER},DATABASE=${_DATABASE},DB_PWD=${_DB_PWD},SECRET=${_SECRET},HTTP_PORT=${_HTTP_PORT},FIREBASE_API_KEY=${_FIREBASE_API_KEY}'
+
+images:
+  - 'gcr.io/$PROJECT_ID/ham-locator-backend:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/ham-locator-backend:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
