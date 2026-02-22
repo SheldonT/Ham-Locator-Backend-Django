@@ -78,7 +78,7 @@ class FirebaseAuthenticationBackend:
 
             user_data = {
                 'email': decoded_token.get('email'),
-                'call': decoded_token.get('callsign'),
+                'callsign': decoded_token.get('callsign'),
                 'country': decoded_token.get('country'),
                 'lat': decoded_token.get('lat'),
                 'lng': decoded_token.get('lng'),

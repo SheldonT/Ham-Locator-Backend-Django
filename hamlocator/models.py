@@ -31,7 +31,7 @@ class Logs(models.Model):
     utc = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'logs'
 
 
@@ -59,7 +59,7 @@ class Users(models.Model):
     #passwd = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'users'
         unique_together = (('callsign', 'email'),)
 
