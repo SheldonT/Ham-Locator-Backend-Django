@@ -1,3 +1,11 @@
+# Uncomment and set to use a custom password reset form URL
+# KEYSTONE_CUSTOM_PASSWORD_RESET_URL = "https://your-frontend.com/reset-password"
+# Keystone password reset email config (uncomment and customize as needed)
+# KEYSTONE_RESET_PASSWORD_EMAIL_SUBJECT = "Reset your Keystone password"
+# KEYSTONE_RESET_PASSWORD_EMAIL_TEXT_TEMPLATE = (
+#     "To reset your password, click the following link: {reset_link}\n"
+#     "If you did not request a password reset, you can ignore this email."
+# )
 """
 Django settings for backend project.
 
@@ -83,7 +91,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -104,6 +112,13 @@ CACHES = {
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ['true', '1', 't', 'y', 'yes']
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -169,6 +184,10 @@ CORS_EXPOSE_HEADERS = [
 
 KEYSTONE_USER_MODEL = 'hamlocator.models.Users'
 
+
+
+# Password reset method flag
+USE_FIREBASE_PW_RESET = False  # Set to False to use custom email/password reset logic
 
 # Initialize Firebase
 if DEBUG:

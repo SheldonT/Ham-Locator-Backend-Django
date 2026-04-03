@@ -2,7 +2,7 @@ from django.core.cache import cache
 from django.views import View
 from django.http import JsonResponse
 from django.conf import settings
-from keystone.utils.cookies import set_auth_cookie
+from keystone.utils.cookies import set_auth_cookie, delete_auth_cookie
 from keystone.utils.refresh_tokens import refresh_firebase_token
 
 
@@ -39,12 +39,25 @@ class RefreshTokensView(View):
                 return response
             else:
                 #cache.delete(cache_key)
-                return JsonResponse({'success': False,
+                #delete_auth_cookie(response, 'idToken')
+                #delete_auth_cookie(response, 'refreshToken')
+                response = JsonResponse({'success': False,
                                      'message': 'Failed to refresh tokens',
                                      'data': {}}, status=400)
+                
+                delete_auth_cookie(response, 'idToken')
+                delete_auth_cookie(response, 'refreshToken')
+
+                return response
         except Exception as e:
-            print(f"Error refreshing tokens: {e}")
-            #cache.delete(cache_key)
-            return JsonResponse({'success': False,
+
+            response = JsonResponse({'success': False,
                                  'message': 'Error occurred while refreshing tokens',
                                  'data': {}}, status=500)
+            
+            delete_auth_cookie(response, 'idToken')
+            delete_auth_cookie(response, 'refreshToken')
+
+            print(f"Error refreshing tokens: {e}")
+            #cache.delete(cache_key)
+            return response
