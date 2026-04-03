@@ -175,6 +175,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 CORS_ALLOWED_ORIGINS = [
     os.getenv('FRONT_END_HOST', 'http://localhost:3000'),
 ]
+
+print("CORS_ALLOWED_ORIGINS:", CORS_ALLOWED_ORIGINS)
 #CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
