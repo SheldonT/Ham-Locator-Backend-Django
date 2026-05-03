@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "keystone-django"
+version = "0.1.0"
+description = "A reusable Django app for authentication and user management."
+authors = [
+    { name="Sheldon Tower", email="towersheldon@gmail.com" }
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+dependencies = [
+    "django>=3.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/keystone-django"
+Repository = "https://github.com/yourusername/keystone-django"
