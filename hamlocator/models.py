@@ -45,7 +45,7 @@ class Session(models.Model):
         db_table = 'session'
 
 class Users(models.Model):
-    userid = models.CharField(primary_key=True, max_length=255)
+    uid = models.CharField(primary_key=True, max_length=255, db_column='userid')
     callsign = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(max_length=255, blank=True, null=True)
     country = models.CharField(max_length=255, blank=True, null=True)
@@ -71,7 +71,7 @@ class Users(models.Model):
             system_fields = []
         else:       
             system_fields = [
-                'userid', 'email'
+                'uid', 'email'
             ]
         
         #define the custom claims by excluding system fields

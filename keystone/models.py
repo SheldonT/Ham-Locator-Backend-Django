@@ -1,8 +1,25 @@
 from django.db import models
 
 
+class KeystoneUser(models.Model):
+    """
+    Base Keystone user model with essential Firebase claims.
+    Inherit from this model in your app to add custom fields.
+    """
+    uid = models.CharField(primary_key=True, max_length=255, db_column='uid')
+    email = models.EmailField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self.email} ({self.uid})"
+    
+
+
 # class Users(models.Model):
-#     userid = models.CharField(primary_key=True, max_length=255)
 #     callsign = models.CharField(max_length=255, blank=True, null=True)
 #     email = models.CharField(max_length=255, blank=True, null=True)
 #     country = models.CharField(max_length=255, blank=True, null=True)
@@ -28,7 +45,6 @@ from django.db import models
 #             system_fields = []
 #         else:       
 #             system_fields = [
-#                 'userid', 'email'
 #             ]
         
 #         #define the custom claims by excluding system fields

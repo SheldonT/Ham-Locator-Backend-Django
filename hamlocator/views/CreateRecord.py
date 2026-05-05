@@ -16,7 +16,7 @@ class CreateRecordView(AuthRequiredMixin, View):
         data = json.loads(request.body)
 
         data["recordId"] = str(uuid.uuid4())
-        data["userId"] = authenticated_user.userid
+        data["userId"] = authenticated_user.uid
 
         print(data)
 

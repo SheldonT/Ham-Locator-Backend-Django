@@ -28,7 +28,7 @@ class ExportLogView(AuthRequiredMixin, View):
 
         authenticated_user = request.user
 
-        records = Logs.objects.filter(user_id=authenticated_user.userid).order_by('contact_date', 'contact_time')
+        records = Logs.objects.filter(user_id=authenticated_user.uid).order_by('contact_date', 'contact_time')
 
         serializer = LogSerializer(records, many=True)
         records_data = serializer.data

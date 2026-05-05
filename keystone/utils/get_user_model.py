@@ -7,6 +7,10 @@ def get_user_model():
     """
 
     model = getattr(settings, "KEYSTONE_USER_MODEL", None)
+
+    if model is None:
+        return None
+    
     model_parts= model.split('.')
 
     app_label = model_parts[0]

@@ -1,4 +1,3 @@
-
 from django.urls import path
 from keystone.views.CreateUser import CreateUserView
 from keystone.views.Login import LoginView

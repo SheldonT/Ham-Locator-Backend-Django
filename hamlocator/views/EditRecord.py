@@ -43,7 +43,7 @@ class EditRecordView(AuthRequiredMixin, View):
                 'data': {}}, status=400)
 
         try:
-            record = Logs.objects.get(record_id=rid, user_id=authenticated_user.userid)
+            record = Logs.objects.get(record_id=rid, user_id=authenticated_user.uid)
         except Logs.DoesNotExist:
             return JsonResponse({
                 'success': False,

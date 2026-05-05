@@ -4,6 +4,24 @@ import os
 import json
 #from .models import Users
 from keystone.utils.get_user_model import get_user_model
+from keystone.models import KeystoneUser
+
+
+class User:
+    """Generic user class that holds Firebase claims as properties"""
+    def __init__(self, **kwargs):
+        # Set basic attributes
+        self.uid = kwargs.get('uid')
+        self.email = kwargs.get('email')
+        self.created_at = kwargs.get('created_at')
+        self.updated_at = kwargs.get('updated_at')
+        
+        # Set any extra custom claims dynamically
+        for key, value in kwargs.items():
+            if key not in ['uid', 'email', 'created_at', 'updated_at']:
+                setattr(self, key, value)
+    
+
 
 class FirebaseAuthenticationBackend:
     def authenticate(self, request):
@@ -19,8 +37,13 @@ class FirebaseAuthenticationBackend:
             uid = decoded_token['uid']
             email = decoded_token.get('email', '')
             
-            user_model = get_user_model()
-            user, created = user_model.objects.get_or_create(userid=uid, defaults={'email': email})
+            try:
+                user_model = get_user_model()
+                user, created = user_model.objects.get_or_create(uid=uid, defaults={'email': email})
+            except Exception as model_error:
+                # If model lookup fails, return a User instance with all Firebase claims as properties
+                print(f"Model lookup failed, returning User object: {model_error}")
+                return User(**decoded_token)
             
             return user
         except Exception as e:
@@ -74,23 +97,21 @@ class FirebaseAuthenticationBackend:
 
         try:
             decoded_token = auth.verify_id_token(token, check_revoked=True)
-            user_id = decoded_token['uid']
-
-            user_data = {
-                'email': decoded_token.get('email'),
-                'callsign': decoded_token.get('callsign'),
-                'country': decoded_token.get('country'),
-                'lat': decoded_token.get('lat'),
-                'lng': decoded_token.get('lng'),
-                'gridloc': decoded_token.get('gridloc'),
-                'privilege': decoded_token.get('privilege'),
-                'units': decoded_token.get('units'),
-                'itu': decoded_token.get('itu'),
-                'utc': decoded_token.get('utc'),
-            }
-            user_model = get_user_model()
-            user, created = user_model.objects.get_or_create(userid=user_id, defaults=user_data)
-            return user
+            uid = decoded_token['uid']
+            
+            try:
+                # Try to use the model if available
+                user_model = get_user_model()
+                # Pass only known fields to the model
+                model_defaults = {
+                    'email': decoded_token.get('email'),
+                }
+                user, created = user_model.objects.get_or_create(uid=uid, defaults=model_defaults)
+                return user
+            except Exception as model_error:
+                # If model lookup fails, return a User instance with all Firebase claims as properties
+                print(f"Model lookup failed, returning User object: {model_error}")
+                return User(**decoded_token)
 
         except Exception as e:
             print(f"Token verification failed: {e}")

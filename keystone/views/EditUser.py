@@ -25,14 +25,14 @@ class EditUserView(AuthRequiredMixin, View):
 
         if email:
             auth.update_user(
-                authenticated_user.userid,
+                authenticated_user.uid,
                 email=email
             )
             authenticated_user.email = email
 
         if (password == confirm_password) and (password and confirm_password):
             auth.update_user(
-                authenticated_user.userid,
+                authenticated_user.uid,
                 password=password
             )
 
@@ -44,10 +44,10 @@ class EditUserView(AuthRequiredMixin, View):
 
         if data:
             auth.set_custom_user_claims(
-                authenticated_user.userid,
+                authenticated_user.uid,
                 data
             )
 
         return JsonResponse({'success': True,
                             'message': 'User updated successfully', 
-                            'data': {"user_id": authenticated_user.userid}}, status=201)
+                            'data': {"user_id": authenticated_user.uid}}, status=201)

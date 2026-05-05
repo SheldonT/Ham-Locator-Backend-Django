@@ -39,9 +39,9 @@ class GetLogView(AuthRequiredMixin, View):
         else:
             order_by = ['contact_date', 'contact_time']
 
-        records = Logs.objects.filter(user_id=authenticated_user.userid).order_by(*order_by)[offset:offset + page_size]
+        records = Logs.objects.filter(user_id=authenticated_user.uid).order_by(*order_by)[offset:offset + page_size]
 
-        total_count = Logs.objects.filter(user_id=authenticated_user.userid).count()
+        total_count = Logs.objects.filter(user_id=authenticated_user.uid).count()
 
         serializer = LogSerializer(records, many=True)
         records_data = serializer.data

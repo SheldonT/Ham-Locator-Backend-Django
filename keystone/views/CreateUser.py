@@ -49,7 +49,7 @@ class CreateUserView(View):
             auth.set_custom_user_claims(uid, claims_data)
 
             user_model.objects.create(
-                userid=uid,
+                uid=uid,
                 email=email,
                 **claims_data,
             )

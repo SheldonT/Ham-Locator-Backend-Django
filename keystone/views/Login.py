@@ -16,7 +16,7 @@ class LoginView(View):
         if user is not None and tokens is not None:
             response = JsonResponse({'success':True,
                                      'message': 'User logged in successfully',
-                                     "data": user.userid}, status=200)
+                                     "data": user.uid}, status=200)
             
             set_auth_cookie(response, 'idToken', tokens['idToken'], max_age=int(tokens['expiresIn']))
             set_auth_cookie(response, 'refreshToken', tokens['refreshToken'], max_age=settings.REFRESH_TOKEN_EXPIRY_DAYS)
@@ -26,7 +26,7 @@ class LoginView(View):
         elif user is not None:
             return JsonResponse({'success': True,
                                  'message': 'User already has valid id token', 
-                                "data": {"user_id": user.userid}}, status=200)
+                                "data": {"user_id": user.uid}}, status=200)
         
         else:
             return JsonResponse({'success': False,
