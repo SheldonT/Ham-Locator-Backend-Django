@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from keystone.utils.cookies import set_auth_cookie, delete_auth_cookie
 from keystone.utils.refresh_tokens import refresh_firebase_token
+from firebase_admin import auth
 
 
 class RefreshTokensView(View):
@@ -14,6 +15,20 @@ class RefreshTokensView(View):
             return JsonResponse({'success': False,
                                  'message': 'No refresh token found in cookies',
                                  'data': {}}, status=200)
+        
+        # Verify the refresh token corresponds to a valid, non-revoked idToken
+        try:
+            id_token = request.COOKIES.get('idToken')
+            if id_token:
+                auth.verify_id_token(id_token, check_revoked=True)
+        except Exception as e:
+            # If idToken is revoked or invalid, don't refresh
+            response = JsonResponse({'success': False,
+                                     'message': 'User session has been revoked',
+                                     'data': {}}, status=200)
+            delete_auth_cookie(response, 'idToken')
+            delete_auth_cookie(response, 'refreshToken')
+            return response
         
         cache_key = f'token_refresh_{refresh_token[-20:]}'
         
