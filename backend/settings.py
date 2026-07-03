@@ -18,6 +18,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
+import sys
 
 import firebase_admin
 from firebase_admin import credentials
@@ -191,14 +192,29 @@ KEYSTONE_USER_MODEL = 'hamlocator.models.Users'
 # Password reset method flag
 USE_FIREBASE_PW_RESET = False  # Set to False to use custom email/password reset logic
 
-# Initialize Firebase
-if DEBUG:
-    print("Running in DEBUG mode: CORS_ALLOW_ALL_ORIGINS is True")
-    # Use credentials file in development
-    cred = credentials.Certificate(
-        os.path.join(BASE_DIR, os.getenv('FIREBASE_CREDENTIALS',''))
-    )
-    firebase_admin.initialize_app(cred)
-else:
-    # Use default application credentials in production (Cloud Run service account)
+BUILD_ONLY_COMMANDS = {'collectstatic'}
+
+
+def _should_initialize_firebase():
+    return not any(command in sys.argv for command in BUILD_ONLY_COMMANDS)
+
+
+def _initialize_firebase():
+    if firebase_admin._apps:
+        return
+
+    if DEBUG:
+        print("Running in DEBUG mode: CORS_ALLOW_ALL_ORIGINS is True")
+        credentials_path = os.getenv('FIREBASE_CREDENTIALS', '')
+        if credentials_path:
+            full_credentials_path = os.path.join(BASE_DIR, credentials_path)
+            if os.path.exists(full_credentials_path):
+                cred = credentials.Certificate(full_credentials_path)
+                firebase_admin.initialize_app(cred)
+                return
+
     firebase_admin.initialize_app()
+
+
+if _should_initialize_firebase():
+    _initialize_firebase()
