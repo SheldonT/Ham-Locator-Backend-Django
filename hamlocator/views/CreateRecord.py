@@ -18,8 +18,6 @@ class CreateRecordView(AuthRequiredMixin, View):
         data["recordId"] = str(uuid.uuid4())
         data["userId"] = authenticated_user.uid
 
-        print(data)
-
         log_serializer = LogSerializer(data=data)
 
         if log_serializer.is_valid():
